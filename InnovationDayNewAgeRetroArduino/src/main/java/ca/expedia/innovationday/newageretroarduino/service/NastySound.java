@@ -10,6 +10,6 @@ public interface NastySound {
     
     void off();
     
-    void on(long miliseconds);
+    void on(long miliseconds, ArduinoSound sound);
     
 }
