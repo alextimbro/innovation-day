@@ -6,7 +6,7 @@ package ca.expedia.innovationday.newageretroarduino.service;
  */
 public interface NastySound {
 
-    void on();
+    void on(ArduinoSound sound);
     
     void off();
     
