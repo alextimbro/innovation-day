@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import gnu.io.CommPortIdentifier; 
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent; 
@@ -21,6 +24,10 @@ public class ArduinoClient implements NastySound, SerialPortEventListener {
         "/dev/serial", // Linux
         "COM4", // Windows
     };
+    
+    private String cmdPath = "c:\\dv\\";
+    private String cmdOutlet = "PwrUsbCmd.exe ";
+    private String OutletParameters;
     
     private String appName;
     private BufferedReader input;
@@ -114,6 +121,24 @@ public class ArduinoClient implements NastySound, SerialPortEventListener {
         }
     }
 
+    private static String executeCommand (String command) {
+        String cmdResponse = "";
+
+        try {
+            final Process process = Runtime.getRuntime().exec(
+                    command);
+            final InputStream in = process.getInputStream();
+            int ch;
+            while((ch = in.read()) != -1) {
+                cmdResponse += ((char)ch);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return cmdResponse;
+    }
+    
     public ArduinoClient() {
         appName = getClass().getName();
     }
@@ -129,17 +154,18 @@ public class ArduinoClient implements NastySound, SerialPortEventListener {
 	public void on(ArduinoSound sound) {
 		if(initialize()) {
 			switch (sound) {
-				case SOUND_A: sendData("a"); break;
-				case SOUND_B: sendData("r"); break;
-				case SOUND_C: sendData("m"); break;
+				case SOUND_A: sendData("a"); executeCommand (cmdPath + cmdOutlet + "0 0 1"); break;
+				case SOUND_B: sendData("r"); executeCommand (cmdPath + cmdOutlet + "0 1 0"); break;
+				case SOUND_C: sendData("m"); executeCommand (cmdPath + cmdOutlet + "1 0 0"); break;
 				case SOUND_D: sendData("s"); break;
 				case SOUND_E: sendData("p"); break;
 			}
 		}
-	}	
+	}
 	
 	@Override
 	public void off() {
+        executeCommand (cmdPath + cmdOutlet + "0 0 0");
 		sendData("n");
 		close();
 		try { Thread.sleep(2000); } catch (InterruptedException ie) {}   
