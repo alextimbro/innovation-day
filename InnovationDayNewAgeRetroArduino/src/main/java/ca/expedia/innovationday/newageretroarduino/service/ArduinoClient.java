@@ -12,8 +12,8 @@ import gnu.io.SerialPortEventListener;
 import java.util.Enumeration;
 
 public class ArduinoClient implements NastySound, SerialPortEventListener {
-    SerialPort serialPort = null;
-
+    SerialPort serialPort = null; 
+    
     private static final String PORT_NAMES[] = { 
         "/dev/tty.usbmodem", // Mac OS X
         "/dev/usbdev", // Linux
@@ -119,16 +119,22 @@ public class ArduinoClient implements NastySound, SerialPortEventListener {
     }
 
 	@Override
-	public void on(long miliseconds) {
-		on();
+	public void on(long miliseconds, ArduinoSound sound) {
+		on(sound);
         try { Thread.sleep(miliseconds); } catch (InterruptedException ie) {}
         off();
 	}	
 	
 	@Override
-	public void on() {
+	public void on(ArduinoSound sound) {
 		if(initialize()) {
-			sendData("y");
+			switch (sound) {
+				case SOUND_A: sendData("a"); break;
+				case SOUND_B: sendData("r"); break;
+				case SOUND_C: sendData("m"); break;
+				case SOUND_D: sendData("s"); break;
+				case SOUND_E: sendData("p"); break;
+			}
 		}
 	}	
 	
