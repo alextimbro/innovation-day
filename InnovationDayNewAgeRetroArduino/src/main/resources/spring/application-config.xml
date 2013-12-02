@@ -8,4 +8,31 @@
     <context:component-scan
             base-package="ca.expedia.innovationday.newageretroarduino"/> 
 
+	<!-- Adding Quartz Job to trigger the New Age Retro Arduino Teeth brusher -->
+	
+	<bean id="runNewAgeRetroArduinoJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="newAgeRetroArduinoTask" />
+		<property name="targetMethod" value="executeBrushTeeth" />
+	</bean>
+
+	<bean id="newAgeRetroArduinoTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="runNewAgeRetroArduinoJob" />
+		<property name="repeatInterval" value="1000" />
+		<property name="startDelay" value="1000" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="jobDetails">
+			<list>
+				<ref bean="runNewAgeRetroArduinoJob" />
+			</list>
+		</property>
+
+		<property name="triggers">
+			<list>
+				<ref bean="newAgeRetroArduinoTrigger" />
+			</list>
+		</property>
+	</bean>
 </beans>
